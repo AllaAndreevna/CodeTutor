@@ -1,0 +1,64 @@
+Python Functions - Course Notes
+
+A function is a reusable block of code that performs a specific task. Functions help you
+organize programs, avoid repetition, and make code easier to read and maintain.
+
+Defining a Function
+
+In Python, you define a function using the def keyword:
+
+def greet(name):
+    """Return a greeting message."""
+    return f"Hello, {name}!"
+
+The def keyword starts the function definition. The function name should be descriptive
+and follow snake_case convention. Parameters go inside parentheses, and the body is
+indented. The return statement sends a value back to the caller.
+
+Calling a Function
+
+To use a function, call it by name with arguments:
+
+message = greet("Alice")
+print(message)  # Output: Hello, Alice!
+
+Parameters and Arguments
+
+Parameters are variables listed in the function definition. Arguments are the actual
+values passed when calling the function. Python supports default parameters:
+
+def power(base, exponent=2):
+    return base ** exponent
+
+print(power(3))      # 9  (exponent defaults to 2)
+print(power(3, 3))   # 27
+
+Return Values
+
+A function can return zero or one value (or a tuple of values). If no return statement
+is present, the function returns None implicitly.
+
+def add(a, b):
+    return a + b
+
+result = add(2, 3)  # result is 5
+
+Scope
+
+Variables defined inside a function are local to that function. Variables defined outside
+are global. To modify a global variable inside a function, use the global keyword.
+
+Best Practices
+
+1. Keep functions small and focused on one task.
+2. Use descriptive names for functions and parameters.
+3. Add docstrings to document what the function does.
+4. Avoid side effects when possible; prefer returning values.
+5. Use type hints for clarity in larger projects.
+
+Common Mistakes
+
+- Forgetting the colon after the function definition.
+- Incorrect indentation in the function body.
+- Missing return statement when a value is expected.
+- Confusing print (displays output) with return (sends value to caller).

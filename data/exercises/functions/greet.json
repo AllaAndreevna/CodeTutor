@@ -1,0 +1,7 @@
+{
+  "id": "greet",
+  "title": "Hello, World Function",
+  "description": "Write a function called greet that takes no arguments and returns the string 'Hello, World!'",
+  "starter_code": "def greet():\n    pass",
+  "topic": "functions"
+}

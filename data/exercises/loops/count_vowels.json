@@ -1,0 +1,7 @@
+{
+  "id": "count_vowels",
+  "title": "Count Vowels",
+  "description": "Write a function called count_vowels that takes a string and returns the number of vowels (a, e, i, o, u) in it. Treat uppercase and lowercase the same.",
+  "starter_code": "def count_vowels(text):\n    pass",
+  "topic": "loops"
+}

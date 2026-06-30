@@ -1,0 +1,40 @@
+{
+  "topics": [
+    {
+      "id": "functions",
+      "title": "Functions",
+      "description": "Define reusable blocks of code with def, parameters, and return values.",
+      "course_doc": "functions.txt",
+      "order": 1,
+      "sample_questions": [
+        "What is a Python function?",
+        "What does the return statement do?",
+        "What is the difference between parameters and arguments?"
+      ]
+    },
+    {
+      "id": "variables",
+      "title": "Variables & Data Types",
+      "description": "Store data with variables, assignment, naming rules, and basic types.",
+      "course_doc": "variables.txt",
+      "order": 2,
+      "sample_questions": [
+        "How do you assign a value to a variable in Python?",
+        "What is the difference between = and ==?",
+        "What is variable scope?"
+      ]
+    },
+    {
+      "id": "loops",
+      "title": "Loops",
+      "description": "Repeat code using for loops, while loops, range(), break, and continue.",
+      "course_doc": "loops.txt",
+      "order": 3,
+      "sample_questions": [
+        "What is a for loop in Python?",
+        "How does the range() function work?",
+        "What is the difference between break and continue?"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "id": "add_numbers",
+  "title": "Add Two Numbers",
+  "description": "Write a function called add that takes two numbers (a and b) and returns their sum.",
+  "starter_code": "def add(a, b):\n    pass",
+  "topic": "functions"
+}

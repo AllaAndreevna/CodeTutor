@@ -1,0 +1,56 @@
+Python Variables - Course Notes
+
+A variable is a name that refers to a value stored in memory. Variables let you label data
+so you can reuse and update it throughout your program.
+
+Assignment
+
+Use the equals sign (=) to assign a value to a variable:
+
+name = "Alice"
+age = 20
+pi = 3.14159
+
+The variable name appears on the left; the value on the right. Python is dynamically typed,
+meaning you do not declare a type — the type is inferred from the value.
+
+Naming Rules
+
+- Names can contain letters, digits, and underscores
+- Must start with a letter or underscore (not a digit)
+- Case-sensitive: `count` and `Count` are different variables
+- Use snake_case for variable names (e.g., student_name)
+
+Common Data Types
+
+int — whole numbers: x = 42
+float — decimal numbers: y = 3.14
+str — text strings: message = "Hello"
+bool — True or False: active = True
+list — ordered collection: items = [1, 2, 3]
+
+Reassigning Variables
+
+You can change what a variable refers to:
+
+count = 0
+count = count + 1   # now count is 1
+
+The += operator is shorthand: count += 1
+
+Constants Convention
+
+By convention, ALL_CAPS names indicate values that should not change:
+
+MAX_SIZE = 100
+
+Scope
+
+Variables created inside a function are local — they exist only within that function.
+Variables defined at the module level are global.
+
+Common Mistakes
+
+- Using a variable before assigning it (NameError)
+- Confusing = (assignment) with == (equality comparison)
+- Reusing built-in names like list, str, or id as variable names

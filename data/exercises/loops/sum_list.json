@@ -1,0 +1,7 @@
+{
+  "id": "sum_list",
+  "title": "Sum a List",
+  "description": "Write a function called sum_list that takes a list of numbers and returns the total sum. Use a for loop.",
+  "starter_code": "def sum_list(numbers):\n    total = 0\n    # your code here\n    return total",
+  "topic": "loops"
+}

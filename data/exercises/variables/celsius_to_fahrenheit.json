@@ -1,0 +1,7 @@
+{
+  "id": "celsius_to_fahrenheit",
+  "title": "Temperature Converter",
+  "description": "Write a function called celsius_to_fahrenheit that takes a float celsius and returns the temperature in Fahrenheit using the formula: F = C * 9/5 + 32. Store the result in a variable before returning.",
+  "starter_code": "def celsius_to_fahrenheit(celsius):\n    pass",
+  "topic": "variables"
+}

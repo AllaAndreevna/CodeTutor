@@ -1,0 +1,7 @@
+{
+  "id": "is_even",
+  "title": "Check Even Number",
+  "description": "Write a function called is_even that takes an integer n and returns True if n is even, otherwise False. Use the modulo operator (%).",
+  "starter_code": "def is_even(n):\n    pass",
+  "topic": "functions"
+}

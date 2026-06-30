@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+chroma_db/
+!chroma_db/.gitkeep
+.env
+*.egg-info/
+dist/
+build/

@@ -1,0 +1,72 @@
+Python Loops - Course Notes
+
+Loops let you repeat a block of code multiple times. Python provides for loops and
+while loops for iteration.
+
+The for Loop
+
+Use for to iterate over a sequence (list, string, range, etc.):
+
+for i in range(5):
+    print(i)   # prints 0, 1, 2, 3, 4
+
+for fruit in ["apple", "banana", "cherry"]:
+    print(fruit)
+
+The range() Function
+
+range(n) generates numbers from 0 to n-1.
+range(start, stop) generates from start up to (but not including) stop.
+range(start, stop, step) adds a step size.
+
+for i in range(2, 10, 2):
+    print(i)   # 2, 4, 6, 8
+
+The while Loop
+
+A while loop runs as long as a condition is True:
+
+count = 0
+while count < 5:
+    print(count)
+    count += 1
+
+Be careful to update the condition variable to avoid infinite loops.
+
+break and continue
+
+break exits the loop immediately.
+continue skips the rest of the current iteration and moves to the next one.
+
+for num in range(10):
+    if num == 5:
+        break      # stops at 5
+    print(num)
+
+Loop Patterns
+
+Accumulating a sum:
+total = 0
+for n in numbers:
+    total += n
+
+Counting items:
+count = 0
+for char in text:
+    if char in "aeiou":
+        count += 1
+
+Nested Loops
+
+A loop inside another loop is useful for 2D data:
+
+for row in matrix:
+    for value in row:
+        print(value)
+
+Common Mistakes
+
+- Off-by-one errors with range (remember stop is exclusive)
+- Forgetting to indent the loop body
+- Infinite while loops when the condition never becomes False
+- Modifying a list while iterating over it (use a copy instead)

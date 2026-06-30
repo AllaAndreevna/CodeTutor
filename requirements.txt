@@ -1,0 +1,10 @@
+gradio>=4.44.0
+langgraph>=0.2.0
+langchain>=0.2.0
+langchain-community>=0.2.0
+chromadb>=0.5.0
+sentence-transformers>=2.7.0
+pytest>=8.3.0
+pytest-cov>=5.0.0
+requests>=2.32.0
+python-dotenv>=1.0.0

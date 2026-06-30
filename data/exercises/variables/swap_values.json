@@ -1,0 +1,7 @@
+{
+  "id": "swap_values",
+  "title": "Swap Two Variables",
+  "description": "Write a function called swap that takes two variables a and b, swaps their values, and returns them as a tuple (b, a). Do not use a temporary variable.",
+  "starter_code": "def swap(a, b):\n    pass",
+  "topic": "variables"
+}
