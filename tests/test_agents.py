@@ -70,10 +70,17 @@ def test_tutor_agent_increments_attempt(mock_ollama, agents, mock_rag):
     mock_rag.retrieve.assert_called_once()
 
 
-@patch.object(CodeTutorAgents, "_call_ollama")
-def test_theory_agent_uses_rag_and_ollama(mock_ollama, agents, mock_rag):
+@patch("src.agents.check_ollama_status")
+@patch("src.agents.ollama_generate")
+def test_theory_agent_uses_rag_and_ollama(mock_generate, mock_status, agents, mock_rag):
     """Theory agent should retrieve context and return an answer."""
-    mock_ollama.return_value = "A function is a reusable block of code."
+    from src.ollama_client import OllamaStatus
+
+    mock_status.return_value = OllamaStatus(
+        available=True, base_url="http://127.0.0.1:11434", model="test", message="ok"
+    )
+    mock_generate.return_value = "A function is a reusable block of code."
     answer = agents.theory_agent("What is a function?")
     assert "function" in answer.lower()
-    mock_rag.retrieve.assert_called_once_with("What is a function?", top_k=3)
+    mock_rag.retrieve.assert_called_once_with("What is a function?", top_k=3, source=None)
+    mock_generate.assert_called_once()

@@ -13,13 +13,16 @@ from src.exercises import (
     topic_summary_markdown,
 )
 from src.graph import build_hint_graph, build_practice_graph
+from src.config import APP_VERSION
 from src.guardrails import filter_input
+from src.ollama_client import check_ollama_status
 from src.rag import RAGSystem
 from src.state import TutorState
 from src.topics import get_topic_by_id, load_topics, sample_question_choices, topic_choices
 
 rag_system = RAGSystem()
 agents = CodeTutorAgents(rag_system)
+ollama_status = check_ollama_status()
 practice_graph = build_practice_graph(agents)
 hint_graph = build_hint_graph(agents)
 
@@ -152,13 +155,19 @@ def build_app() -> gr.Blocks:
         else ("", "")
     )
     initial_samples = sample_question_choices(initial_topic)
+    ollama_badge = (
+        f"🟢 **Ollama:** connected at `{ollama_status.base_url}` · model `{ollama_status.model}`"
+        if ollama_status.available
+        else f"🔴 **Ollama:** offline — {ollama_status.message}"
+    )
 
     with gr.Blocks(title="CodeTutor - AI Programming Tutor") as demo:
         gr.Markdown("# CodeTutor — AI Programming Tutor")
         gr.Markdown(
-            "**Capstone project** · Topic-based curriculum · RAG · LangGraph · "
-            "Safety guardrails · Local Ollama LLM"
+            f"**Capstone project** · Topic-based curriculum · RAG · LangGraph · "
+            f"Safety guardrails · Local Ollama LLM · **v{APP_VERSION}**"
         )
+        gr.Markdown(ollama_badge)
 
         attempt_state = gr.State(0)
 

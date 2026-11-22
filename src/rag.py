@@ -1,5 +1,6 @@
 """Retrieval-Augmented Generation system for course documents."""
 
+import re
 import uuid
 from pathlib import Path
 
@@ -15,6 +16,60 @@ from src.config import (
     EMBEDDING_MODEL,
     TOP_K_RETRIEVAL,
 )
+
+
+def _load_embedder() -> SentenceTransformer:
+    """
+    Load the embedding model, preferring the local Hugging Face cache.
+
+    Avoids network calls on startup (fixes SSL/proxy/timeout errors in class/demo).
+    """
+    try:
+        return SentenceTransformer(EMBEDDING_MODEL, local_files_only=True)
+    except (OSError, ValueError):
+        pass
+
+    try:
+        return SentenceTransformer(EMBEDDING_MODEL)
+    except Exception as exc:
+        raise RuntimeError(
+            "Failed to load the embedding model. Options:\n"
+            "  1. Run with the project venv: .\\venv\\Scripts\\python app.py\n"
+            "  2. Download once online: python -c \"from sentence_transformers "
+            "import SentenceTransformer; "
+            "SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')\"\n"
+            "  3. Check your network / VPN / proxy settings for huggingface.co"
+        ) from exc
+
+
+class _KeywordRetriever:
+    """Lightweight offline fallback when embedding model is unavailable."""
+
+    def __init__(self, chunks: list[tuple[str, str]]):
+        """chunks: list of (text, source filename)"""
+        self._chunks = chunks
+
+    def retrieve_with_scores(
+        self,
+        query: str,
+        top_k: int = TOP_K_RETRIEVAL,
+        source: str | None = None,
+    ) -> list[tuple[str, float]]:
+        query_tokens = set(re.findall(r"[a-z0-9]+", query.lower()))
+        if not query_tokens:
+            return []
+
+        scored: list[tuple[str, float]] = []
+        for text, doc_source in self._chunks:
+            if source and doc_source != source:
+                continue
+            text_tokens = set(re.findall(r"[a-z0-9]+", text.lower()))
+            overlap = len(query_tokens & text_tokens)
+            if overlap:
+                scored.append((text, overlap / len(query_tokens)))
+
+        scored.sort(key=lambda item: item[1], reverse=True)
+        return scored[:top_k]
 
 
 class RAGSystem:
@@ -35,7 +90,15 @@ class RAGSystem:
         self._ephemeral = ephemeral
 
         self.chroma_db_dir.mkdir(parents=True, exist_ok=True)
-        self.embedder = SentenceTransformer(EMBEDDING_MODEL)
+        self._keyword_fallback: _KeywordRetriever | None = None
+        self.embedder: SentenceTransformer | None = None
+        try:
+            self.embedder = _load_embedder()
+        except RuntimeError:
+            docs = self._load_txt_files()
+            self._keyword_fallback = _KeywordRetriever(
+                [(text, source) for _, text, source in docs]
+            )
         collection_name = (
             f"{CHROMA_COLLECTION_NAME}_{uuid.uuid4().hex}"
             if ephemeral
@@ -99,6 +162,9 @@ class RAGSystem:
         if not documents:
             return
 
+        if self.embedder is None:
+            return
+
         ids = [doc_id for doc_id, _, _ in documents]
         texts = [text for _, text, _ in documents]
         metadatas = [{"source": source} for _, _, source in documents]
@@ -111,39 +177,61 @@ class RAGSystem:
             metadatas=metadatas,
         )
 
-    def retrieve(self, query: str, top_k: int = TOP_K_RETRIEVAL) -> str:
+    def retrieve(
+        self,
+        query: str,
+        top_k: int = TOP_K_RETRIEVAL,
+        source: str | None = None,
+    ) -> str:
         """Retrieve top-k relevant chunks and return as a single context string."""
-        results = self.retrieve_with_scores(query, top_k=top_k)
+        results = self.retrieve_with_scores(query, top_k=top_k, source=source)
         if not results:
             return ""
         return "\n\n".join(text for text, _ in results)
 
     def retrieve_with_scores(
-        self, query: str, top_k: int = TOP_K_RETRIEVAL
+        self,
+        query: str,
+        top_k: int = TOP_K_RETRIEVAL,
+        source: str | None = None,
     ) -> list[tuple[str, float]]:
         """Retrieve top-k chunks with similarity scores (distance converted to score)."""
         if not query.strip():
             return []
 
+        if self._keyword_fallback is not None:
+            return self._keyword_fallback.retrieve_with_scores(
+                query, top_k=top_k, source=source
+            )
+
         if self.collection.count() == 0:
             return []
 
         query_embedding = self.embedder.encode([query], show_progress_bar=False).tolist()
-        results = self.collection.query(
-            query_embeddings=query_embedding,
-            n_results=min(top_k, self.collection.count()),
-            include=["documents", "distances"],
-        )
+        where_filter = {"source": source} if source else None
 
-        documents = results.get("documents", [[]])[0]
-        distances = results.get("distances", [[]])[0]
+        def _query(n_results: int, where: dict | None) -> list[tuple[str, float]]:
+            kwargs: dict = {
+                "query_embeddings": query_embedding,
+                "n_results": n_results,
+                "include": ["documents", "distances"],
+            }
+            if where:
+                kwargs["where"] = where
+            results = self.collection.query(**kwargs)
+            documents = results.get("documents", [[]])[0]
+            distances = results.get("distances", [[]])[0]
+            scored: list[tuple[str, float]] = []
+            for doc, distance in zip(documents, distances):
+                scored.append((doc, 1.0 - distance))
+            return scored
 
-        scored: list[tuple[str, float]] = []
-        for doc, distance in zip(documents, distances):
-            # Cosine distance: lower is better; convert to similarity score
-            score = 1.0 - distance
-            scored.append((doc, score))
-        return scored
+        n_results = min(top_k, self.collection.count())
+        if where_filter:
+            scored = _query(n_results, where_filter)
+            if scored:
+                return scored
+        return _query(n_results, None)
 
     def reset_index(self) -> None:
         """Clear and rebuild the vector index (useful for testing)."""

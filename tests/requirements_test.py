@@ -82,7 +82,18 @@ def test_req005_agents_integrate_rag_with_ollama():
         rag = RAGSystem(course_docs_dir=docs_dir, chroma_db_dir=chroma_dir, ephemeral=True)
         try:
             agents = CodeTutorAgents(rag)
-            with patch.object(agents, "_call_ollama", return_value="Functions use def.") as mock_llm:
+            from src.ollama_client import OllamaStatus
+
+            with (
+                patch("src.agents.check_ollama_status") as mock_status,
+                patch("src.agents.ollama_generate", return_value="Functions use def.") as mock_llm,
+            ):
+                mock_status.return_value = OllamaStatus(
+                    available=True,
+                    base_url="http://127.0.0.1:11434",
+                    model=OLLAMA_MODEL,
+                    message="ok",
+                )
                 answer = agents.theory_agent("Explain functions")
                 assert answer == "Functions use def."
                 mock_llm.assert_called_once()

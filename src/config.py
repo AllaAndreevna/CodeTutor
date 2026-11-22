@@ -1,13 +1,18 @@
 """Configuration for CodeTutor."""
 
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Project root (parent of src/)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-# Ollama settings
-OLLAMA_MODEL = "codellama:7b-instruct-q4_0"
-OLLAMA_BASE_URL = "http://localhost:11434"
+# Ollama settings — 127.0.0.1 avoids Windows localhost/IPv6 issues
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "codellama:7b-instruct-q4_0")
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
 
 # RAG settings
 CHUNK_SIZE = 500
@@ -23,3 +28,6 @@ CHROMA_DB_DIR = PROJECT_ROOT / "chroma_db"
 
 # Chroma collection name
 CHROMA_COLLECTION_NAME = "course_docs"
+
+# App version (shown in UI — verify you restarted after updates)
+APP_VERSION = "1.2.0"
